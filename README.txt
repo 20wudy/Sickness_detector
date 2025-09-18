@@ -11,22 +11,22 @@ How to run:
 4. Copy the link to webpage generated in the terminal of VSCode. Run that in a browser, and test out functionality. 
 
 Outputs to expect:
-You should expect a webpage which allows you to enter your heart rate and sleep data. Once you hit 4 weeks, you'll also see a trends graph for sleep and hr. 
+You should expect a webpage allowing you to enter your heart rate and sleep data. Once you hit 4 weeks, you'll also see a trends graph for sleep and hr. 
 
 Limitations/Terms and Conditions:
 1. Not Medical Advice
 The data and insights provided by this health monitoring tool are for informational purposes only and should not be construed as medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional for medical concerns.
 
 2. Accuracy of Data
-While we strive to provide accurate heart rate and anomaly detection, the system relies on algorithmic calculations and may produce false positives or negatives. Do not solely rely on this tool for health decisions (although always take good care of yourself).
+While the developer strives to provide accurate heart rate and anomaly detection, the system relies on algorithmic calculations and may produce false positives or negatives. Do not solely rely on this tool for health decisions (although always take good care of yourself).
 
 3. No Liability
-The developers and operators of this tool are not responsible for any actions taken based on the data presented. Use this application at your own risk.
+The developer is not responsible for any actions taken based on the data presented. Use the results of the application cautiously.
 
 4. Data Privacy
-User health data may be processed for analytical purposes but will be handled in accordance with applicable privacy laws, as the product is meant to run locally. However, no system is completely secure, and thus users should be aware of potential risks.
+User health data may be processed for analytical purposes, but will be handled in accordance with applicable privacy laws, as the product is meant to run locally. However, no system is completely secure, and users should be aware of potential risks.
 
 By using this application, you acknowledge and accept these terms and limitations.
 
-In addition to the disclaimers, the product would ideally be integrated with watch API's so that the data could be fed continuously. That is not possible due to licensing fees and timing, and therefore the alternative method of manual input was chosen. 
+In addition to the disclaimers, the product would ideally be integrated with watch API's so that the data could be fed continuously. That is not possible due to licensing fees and timing, and, therefore, the alternative method of manual input was chosen. 
 
