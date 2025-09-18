@@ -1,5 +1,6 @@
-Abstract: Health Monitor
-Using resting/min/max hr data and sleep data to warn users of excessive fatigue and elevated risk of sickness. The user would input the desired values to a website, which would be sent to the model in the backend. 
+# Health Monitor
+
+Abstract: Using resting/min/max hr data and sleep data to warn users of excessive fatigue and elevated risk of sickness. The user would input the desired values to a website, which would be sent to the model in the backend. 
 
 Dependencies: Please install all libraries listed in requirements.txt
 
