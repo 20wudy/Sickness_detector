@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Your Health Dashboard</h1>
+
+<div class="data-entry">
+    <form action="/dashboard" method="post">
+        <input type="hidden" name="user_id" value="{{ request.args.get('user_id', 'default_user') }}">
+        <h3>Add Today's Data</h3>
+        <div class="form-group">
+            <label>Avg HR: <input type="number" name="avg_hr" required></label>
+            <label>Min HR: <input type="number" name="min_hr" required></label>
+            <label>Max HR: <input type="number" name="max_hr" required></label>
+        </div>
+        <div class="form-group">
+            <label>Sleep Hours: <input type="number" step="0.1" name="sleep_hours" required></label>
+            <label>Sleep Quality: <input type="number" name="sleep_quality" min="0" max="100" value="80"></label>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+{% if analysis.status == 'insufficient_data' %}
+<div class="alert">
+    Need {{ analysis.required_days }} days of data (currently {{ analysis.current_days }}).
+    Check back tomorrow!
+</div>
+{% else %}
+<div class="analysis">
+    <h3>Latest Analysis</h3>
+    <p>Avg HR: {{ analysis.latest_data.avg_hr }} 
+       (14-day avg: {{ analysis.latest_data.hr_14day_avg|round(1) }})</p>
+    <p>Sleep: {{ analysis.latest_data.sleep_hours }}h
+       (14-day avg: {{ analysis.latest_data.sleep_14day_avg|round(1) }}h)</p>
+    {% if analysis.latest_data.is_anomaly %}
+    <div class="alert warning">⚠️ Abnormal pattern detected!</div>
+    {% endif %}
+</div>
+
+<div class="charts">
+    <canvas id="hrChart"></canvas>
+    <canvas id="sleepChart"></canvas>
+</div>
+
+<script>
+    const chartData = {{ analysis.chart_data | tojson | safe }};
+    
+    // HR Chart
+    new Chart(document.getElementById('hrChart'), {
+        type: 'line',
+        data: {
+            labels: chartData.map(d => d.date),
+            datasets: [
+                {
+                    label: 'Avg HR',
+                    data: chartData.map(d => d.avg_hr),
+                    borderColor: 'red'
+                },
+                {
+                    label: '14-day Avg',
+                    data: chartData.map(d => d.hr_14day_avg),
+                    borderColor: 'darkred',
+                    borderDash: [5,5]
+                }
+            ]
+        }
+    });
+    
+    // Sleep Chart
+    new Chart(document.getElementById('sleepChart'), {
+        type: 'line',
+        data: {
+            labels: chartData.map(d => d.date),
+            datasets: [
+                {
+                    label: 'Sleep Hours',
+                    data: chartData.map(d => d.sleep_hours),
+                    borderColor: 'blue'
+                },
+                {
+                    label: '14-day Avg',
+                    data: chartData.map(d => d.sleep_14day_avg),
+                    borderColor: 'darkblue',
+                    borderDash: [5,5]
+                }
+            ]
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

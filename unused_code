@@ -1,0 +1,99 @@
+# GOAL: READ HR DATA
+hr_df = pd.read_csv("Data\heartrate_seconds_merged.csv", parse_dates=['Time'])
+hr_df.set_index('Time', inplace=True)
+hr_df.sort_index(inplace=True)
+
+# Change into 5 min intervals
+hr_5min = hr_df.groupby('Id').resample('5min')['Value'].agg(['mean', 'min', 'max'])
+hr_5min = hr_5min.reset_index()
+
+# Avg, resting and max hr
+daily_hr = hr_5min.groupby(['Id', pd.Grouper(key='Time', freq='D')]).agg({
+    'mean': 'mean',
+    'min': 'min',
+    'max': 'max'
+}).reset_index()
+
+sm_df = pd.read_csv("Data\minuteSleep_merged.csv", parse_dates=['date'])
+sm_df.set_index('date', inplace=True)
+sm_df.sort_index(inplace=True)
+
+# print(sm_df.head())
+
+# Objective: Find the avg daily hr, the daily highest/lowest (resting) hr, and daily "sleep score"
+
+
+# https://www.fitabase.com/media/1930/fitabasedatadictionary102320.pdf 
+# sleeping; includes both asleep (1) and restless (2)
+sm_df['sleeping'] = sm_df['value'].isin([1, 2]).astype(int) 
+grouped = sm_df.groupby('Id').resample('D', level=0)['sleeping']
+daily_sleep_sum = grouped.sum()
+sleep_min = daily_sleep_sum.reset_index(name='sleep_minutes')
+
+sleep_min['sleep_hours'] = sleep_min['sleep_minutes'] / 60
+
+# awake (3)
+sm_df['awake'] = sm_df['value'].isin([3]).astype(int)
+a_grouped = sm_df.groupby('Id').resample('D', level=0)['awake']
+night_awake_sum = a_grouped.sum()
+awake_min = night_awake_sum.reset_index(name='awake_minutes')
+awake_min['awake_hours'] = awake_min['awake_minutes'] / 60
+
+# restless; sleeping but tossing around (2)
+sm_df['restless'] = sm_df['value'].isin([2]).astype(int)
+r_grouped = sm_df.groupby('Id').resample('D', level=0)['restless']
+restless_sum = r_grouped.sum()
+restless_min = restless_sum.reset_index(name='restless_minutes')
+restless_min['restless_hours'] = restless_min['restless_minutes'] / 60
+
+# print(sleep_min)
+# print(awake_min)
+
+
+# ADD RESTLESS AND CHANGE THE AWAKE HOURS SCORE IMPACT AND RETURN INT
+def sleep_quality(sleep_hours, awake_hours):
+    score = 90
+    if sleep_hours < 7:
+        score -= 10*(7-sleep_hours)
+    elif sleep_hours > 9:
+        score -= 10*(sleep_hours - 9)
+    if awake_hours > .3:
+        score -= 10*(awake_hours - .3)
+    return score
+
+# print(sleep_quality(8, 1))
+
+# print(sm_df.head())
+
+
+
+
+2025-05-11 00:00:00.000000,88.0,50.0,159.0,8.0,80.0
+2025-05-12 00:00:00.000000,87.2,49.5,155.3,7.8,82.1
+2025-05-13 00:00:00.000000,86.9,48.9,153.8,7.9,79.4
+2025-05-14 00:00:00.000000,88.5,50.1,157.2,8.1,81.0
+2025-05-15 00:00:00.000000,89.1,51.3,159.5,7.7,78.6
+2025-05-16 00:00:00.000000,90.3,52.2,161.0,7.6,75.8
+2025-05-17 00:00:00.000000,91.0,53.0,163.5,7.9,77.2
+2025-05-18 00:00:00.000000,88.8,50.5,158.0,8.2,80.5
+2025-05-19 00:00:00.000000,87.6,49.8,156.1,8.0,82.3
+2025-05-20 00:00:00.000000,86.4,48.7,154.0,7.9,79.9
+2025-05-21 00:00:00.000000,85.9,48.3,152.7,7.8,78.7
+2025-05-22 00:00:00.000000,84.5,47.5,150.5,8.1,81.1
+2025-05-23 00:00:00.000000,83.8,46.9,149.0,8.3,83.0
+2025-05-24 00:00:00.000000,85.0,48.1,151.5,7.9,79.8
+2025-05-25 00:00:00.000000,86.2,49.2,153.8,7.7,76.4
+2025-05-26 00:00:00.000000,87.4,50.0,155.2,7.4,74.1
+2025-05-27 00:00:00.000000,88.1,50.7,156.7,7.3,73.5
+2025-05-28 00:00:00.000000,89.5,51.6,158.9,7.0,71.2
+2025-05-29 00:00:00.000000,90.3,52.3,160.0,6.9,70.0
+2025-05-30 00:00:00.000000,91.1,53.1,161.8,6.7,68.5
+2025-05-31 00:00:00.000000,89.9,51.4,160.2,7.1,71.8
+2025-06-01 00:00:00.000000,88.7,50.2,158.4,7.4,74.0
+2025-06-02 00:00:00.000000,87.4,49.0,156.7,7.7,77.3
+2025-06-03 00:00:00.000000,86.1,48.5,154.9,7.9,79.5
+2025-06-04 00:00:00.000000,85.2,47.9,153.0,8.0,81.2
+2025-06-05 00:00:00.000000,84.6,47.1,151.7,8.2,82.7
+2025-06-06 00:00:00.000000,83.9,46.4,150.3,8.3,83.5
+2025-06-07 00:00:00.000000,85.0,47.8,152.4,7.8,80.9
+2025-06-08 00:00:00.000000,86.3,48.9,154.8,7.6,78.4

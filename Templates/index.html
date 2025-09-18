@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Health Monitoring System</h1>
+<form action="/dashboard" method="post">
+    <h2>New User Setup</h2>
+    <input type="text" name="user_id" placeholder="Choose your ID" required>
+    
+    <h3>Today's Health Data</h3>
+    <div class="form-group">
+        <label>Average HR: <input type="number" name="avg_hr" required></label>
+        <label>Resting HR: <input type="number" name="min_hr" required></label>
+        <label>Max HR: <input type="number" name="max_hr" required></label>
+    </div>
+    <div class="form-group">
+        <label>Sleep Hours: <input type="number" step="0.1" name="sleep_hours" required, value="9"></label>
+        <label>Sleep Quality (0-100): <input type="number" name="sleep_quality" min="0" max="100" value="80"></label>
+    </div>
+    <button type="submit">Start Tracking</button>
+</form>
+{% endblock %}
